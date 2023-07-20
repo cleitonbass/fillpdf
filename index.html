@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preencher PDF</title>
+    <!-- Script da biblioteca "pdf-lib" -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.11.0/pdf-lib.min.js"></script>
+</head>
+<body>
+    <!-- O restante do seu código HTML aqui... -->
+
+    <h1>Selecione um PDF preenchível</h1>
+    <input type="file" id="pdfFile" accept=".pdf">
+    <br>
+    <button onclick="abrirPDF()">Abrir PDF</button>
+    <br>
+    <h2>Preencha os campos:</h2>
+    <div id="formFields"></div>
+    <br>
+    <button onclick="preencherPDF()">Preencher PDF</button>
+
+    <style>
+        .read-only {
+            pointer-events: none;
+        }
+    </style>
+
+    <script>
+        let pdfDoc = null;
+        let pdfFields = {};
+
+        async function abrirPDF() {
+            const pdfFile = document.getElementById("pdfFile").files[0];
+
+            if (!pdfFile) {
+                alert("Por favor, selecione um PDF.");
+                return;
+            }
+
+            const pdfData = await pdfFile.arrayBuffer();
+            pdfDoc = await PDFLib.PDFDocument.load(pdfData);
+
+            const form = pdfDoc.getForm();
+
+            pdfFields = {};
+
+            for (const field of form.getFields()) {
+                pdfFields[field.getName()] = field.getText();
+            }
+
+            const formFieldsDiv = document.getElementById("formFields");
+            formFieldsDiv.innerHTML = "";
+
+            for (const fieldName in pdfFields) {
+                const label = document.createElement("label");
+                label.textContent = fieldName + ": ";
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.id = fieldName;
+                input.value = pdfFields[fieldName] || "";
+
+                formFieldsDiv.appendChild(label);
+                formFieldsDiv.appendChild(input);
+                formFieldsDiv.appendChild(document.createElement("br"));
+            }
+        }
+
+        async function preencherPDF() {
+            if (!pdfDoc) {
+                alert("Por favor, abra um PDF primeiro.");
+                return;
+            }
+
+            const formFieldsDiv = document.getElementById("formFields");
+
+            for (const fieldName in pdfFields) {
+                const input = document.getElementById(fieldName);
+                pdfFields[fieldName] = input.value;
+            }
+
+            const form = pdfDoc.getForm();
+
+            for (const fieldName in pdfFields) {
+                const field = form.getField(fieldName);
+                if (field) {
+                    field.setText(pdfFields[fieldName]);
+                    field.enableReadOnly(); // Definir como somente leitura
+                }
+            }
+
+            const pdfBytes = await pdfDoc.save();
+
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pdf_preenchido.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
