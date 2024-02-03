@@ -4,25 +4,76 @@
     <title>Preencher PDF</title>
     <!-- Script da biblioteca "pdf-lib" -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.11.0/pdf-lib.min.js"></script>
-</head>
-<body>
-    <!-- O restante do seu código HTML aqui... -->
-
-    <h1>Selecione um PDF preenchível</h1>
-    <input type="file" id="pdfFile" accept=".pdf">
-    <br>
-    <button onclick="abrirPDF()">Abrir PDF</button>
-    <br>
-    <h2>Preencha os campos:</h2>
-    <div id="formFields"></div>
-    <br>
-    <button onclick="preencherPDF()">Preencher PDF</button>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        .read-only {
-            pointer-events: none;
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+            background-color: red;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        h2 {
+            color: white;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            border: 1px solid white;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: 100%;
         }
     </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Selecione um PDF preenchível</h1>
+        <input type="file" id="pdfFile" accept=".pdf">
+        <br>
+        <button onclick="abrirPDF()">Abrir PDF</button>
+        <br>
+        <h2>Preencha os campos:</h2>
+        <div id="formFields"></div>
+        <br>
+        <button onclick="preencherPDF()">Preencher PDF</button>
+    </div>
 
     <script>
         let pdfDoc = null;
